@@ -44,11 +44,11 @@ find2020EntriesMultiplication' = tripleOperation (*). findRightTriple . getTripl
 main :: IO ()
 main = do
   inputs <- lines <$> readFile "lib/day1.txt"
-  let numbers = map read inputs :: [Int]
+  let expenseReport = map read inputs :: [Int]
   putStrLn "part1:"
-  print $ find2020EntriesMultiplication numbers
+  print $ find2020EntriesMultiplication expenseReport
   putStrLn "part2:"
-  print $ find2020EntriesMultiplication' numbers
+  print $ find2020EntriesMultiplication' expenseReport
 
 -- NEW SOLUTION USING LIST COMPREHENSION WHICH I SAW ONLINE
 --
@@ -56,8 +56,8 @@ main = do
 main' :: IO()
 main' = do
   inputs <- lines <$> readFile "lib/day1.txt"
-  let numbers = map read inputs :: [Int]
+  let expenseReport = map read inputs :: [Int]
   putStrLn "part1:"
-  print $ head [a * b | a <- numbers, b <- numbers, a + b == 2020]
+  print $ head [a * b | a <- expenseReport, b <- expenseReport, a + b == 2020]
   putStrLn "part2:"
-  print $ head [a * b * c | a <- numbers, b <- numbers, c <- numbers, a + b + c == 2020]
+  print $ head [a * b * c | a <- expenseReport, b <- expenseReport, c <- expenseReport, a + b + c == 2020]
