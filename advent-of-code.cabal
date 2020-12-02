@@ -21,7 +21,8 @@ library
     , aeson == 1.4.7.1
     , bytestring == 0.10.10.1
   exposed-modules:
-    Day1
+    Day1,
+    Day2
 
 executable advent-of-code
   hs-source-dirs:      src 
