@@ -1,16 +1,13 @@
-module Day1 (main) where
+module Day1 (main, main') where
 
 import Control.Applicative
 
 -- Report Repair
 type ExpenseReport = [Int]
 
--- Go through the list one element at a time
---
--- Using each element, add it with all others in the list and check if the result
--- is equal to 2020
---
--- Return the two elements which are equal to 2020
+
+-- ORIGINAL SOLUTION I CAME UP WITH
+-- 
 
 -- Creates all possible combinations of pairs from a list
 getPairCombos :: [a] -> [(a, a)]
@@ -44,7 +41,6 @@ find2020EntriesMultiplication = uncurry (*). findRightCombo . getPairCombos
 find2020EntriesMultiplication' :: ExpenseReport -> Int
 find2020EntriesMultiplication' = tripleOperation (*). findRightTriple . getTripleCombos
 
--- My puzzle input
 main :: IO ()
 main = do
   inputs <- lines <$> readFile "lib/day1.txt"
@@ -53,3 +49,15 @@ main = do
   print $ find2020EntriesMultiplication numbers
   putStrLn "part2:"
   print $ find2020EntriesMultiplication' numbers
+
+-- NEW SOLUTION USING LIST COMPREHENSION WHICH I SAW ONLINE
+--
+
+main' :: IO()
+main' = do
+  inputs <- lines <$> readFile "lib/day1.txt"
+  let numbers = map read inputs :: [Int]
+  putStrLn "part1:"
+  print $ head [a * b | a <- numbers, b <- numbers, a + b == 2020]
+  putStrLn "part2:"
+  print $ head [a * b * c | a <- numbers, b <- numbers, c <- numbers, a + b + c == 2020]
