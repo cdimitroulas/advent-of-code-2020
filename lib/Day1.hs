@@ -1,9 +1,6 @@
-module Day1 (getReportRepairAnswer, getReportRepairAnswer2) where
+module Day1 (main) where
 
-import qualified Data.ByteString.Lazy as B
 import Control.Applicative
--- import Control.Exception
-import Data.Aeson
 
 -- Report Repair
 type ExpenseReport = [Int]
@@ -47,47 +44,12 @@ find2020EntriesMultiplication = uncurry (*). findRightCombo . getPairCombos
 find2020EntriesMultiplication' :: ExpenseReport -> Int
 find2020EntriesMultiplication' = tripleOperation (*). findRightTriple . getTripleCombos
 
--- Tests
--- testExpenseReport1 :: ExpenseReport
--- testExpenseReport1 = [
---     1721,
---     979,
---     366,
---     299,
---     675,
---     1456
---   ]
-
--- testResult1 = assert (result == 514579) result
---   where
---     result = find2020EntriesMultiplication testExpenseReport1
-
--- testExpenseReport2 :: ExpenseReport
--- testExpenseReport2 = [
---     2020,
---     0,
---     1,
---     40,
---     49,
---     2039
---   ]
-
--- testResult2 = assert (result == 0) result
---   where
---     result = find2020EntriesMultiplication testExpenseReport2
-
 -- My puzzle input
-jsonFile :: FilePath
-jsonFile = "lib/day1-1.json"
-
-getJSON :: IO B.ByteString
-getJSON = B.readFile jsonFile
-
-getPuzzleInput :: IO (Maybe ExpenseReport)
-getPuzzleInput = decode <$> getJSON
-
-getReportRepairAnswer :: IO Int
-getReportRepairAnswer = maybe (error "Error parsing json file") find2020EntriesMultiplication <$> getPuzzleInput
-
-getReportRepairAnswer2 :: IO Int
-getReportRepairAnswer2 = maybe (error "Error parsing json file") find2020EntriesMultiplication' <$> getPuzzleInput
+main :: IO ()
+main = do
+  inputs <- lines <$> readFile "lib/day1.txt"
+  let numbers = map read inputs :: [Int]
+  putStrLn "part1:"
+  print $ find2020EntriesMultiplication numbers
+  putStrLn "part2:"
+  print $ find2020EntriesMultiplication' numbers

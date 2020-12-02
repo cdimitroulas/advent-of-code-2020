@@ -1,15 +1,11 @@
 module Main where
 
-import Day1
-import Day2 as D2
+import qualified Day1 as D1
+import qualified Day2 as D2
 
 main :: IO ()
 main = do
-  putStrLn "Day1 Part1 answer:"
-  getReportRepairAnswer >>= print
-
-  putStrLn "Day1 Part2 answer:"
-  getReportRepairAnswer2 >>= print
+  D1.main
   
   -- Day2:
   putStrLn "Day2 part 1 answer:"
