@@ -21,7 +21,8 @@ library
     , bytestring == 0.10.10.1
   exposed-modules:
     Day1,
-    Day2
+    Day2,
+    Day3
 
 executable advent-of-code
   hs-source-dirs:      src 
