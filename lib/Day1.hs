@@ -23,14 +23,18 @@ pairSumIs2020 = (==) 2020 . uncurry (+)
 tripleOperation :: (Int -> Int -> Int) -> (Int, Int, Int) -> Int
 tripleOperation f (a,b,c) = f (f a b) c
 
+sumTriple :: (Int, Int, Int) -> Int
 sumTriple = tripleOperation (+)
 
+tripleSumIs2020 :: (Int, Int, Int) -> Bool                                                  
 tripleSumIs2020 = (==) 2020 . sumTriple
 
 findRightCombo :: [(Int, Int)] -> (Int, Int)
+findRightCombo [] = error "Empty array passed to findRightCombo"
 findRightCombo (x:xs) = if pairSumIs2020 x then x else findRightCombo xs
 
 findRightTriple :: [(Int, Int, Int)] -> (Int, Int, Int)
+findRightTriple [] = error "Empty array passed to findRightTriple"
 findRightTriple (x:xs) = if tripleSumIs2020 x then x else findRightTriple xs
 
 -- Finds pair adding to 2020 and multiplies it together
