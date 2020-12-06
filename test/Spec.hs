@@ -1,6 +1,7 @@
 import Test.Hspec
 
 import qualified Day4 as D4
+import qualified Day5 as D5
 
 day3TestInput :: [[Char]]
 day3TestInput = [
@@ -12,6 +13,12 @@ day3TestInput = [
 
 main :: IO ()
 main = hspec $ do
-  describe "Day4 exercises" $ do
-    it "returns the correct number of valid passports" $ do
-      D4.getNoOfValidPassports day3TestInput `shouldBe` 2
+  -- describe "Day4 exercises" $ do
+  --   it "returns the correct number of valid passports" $ do
+  --     D4.getNoOfValidPassports day3TestInput `shouldBe` 2
+
+  describe "Day5 exercises" $ do
+    it "returns the correct seat ID given seat character string" $ do
+      D5.getSeatId "BFFFBBFRRR" `shouldBe` 567
+      D5.getSeatId "FFFBBBFRRR" `shouldBe` 119
+      D5.getSeatId "BBFFBBFRLL" `shouldBe` 820
