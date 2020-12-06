@@ -1,6 +1,7 @@
 module Day6 where
 
 import Data.List.Split
+import Data.Map (Map)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 
@@ -10,13 +11,17 @@ getNumberOfYesAnswers = sum . map (length . Set.fromList . concat . lines) . spl
 part1 :: IO ()
 part1 = readFile "lib/day6.txt" >>= print . getNumberOfYesAnswers
 
--- Given a list of strings like ["abc", "a", "b"] count the occurrences of each character.
--- 
--- 1. Create a Map with number of occurrences of each char.
--- 2. check how many keys in the map are equal to the length of the list (indicated all strings in list
--- had that char)
+countCharOccurrences :: [String] -> Map Char Int
+countCharOccurrences =
+  Map.unionsWith (+)
+  . map (Map.fromSet (const (1 :: Int)) . Set.fromList)
+
 getNoOfQsEver1AnsweredYes :: [String] -> Int
-getNoOfQsEver1AnsweredYes list = Map.size . Map.filter (== length list). Map.unionsWith (+) . map (Map.fromSet (const (1 :: Int)) . Set.fromList) $ list
+getNoOfQsEver1AnsweredYes list =
+    Map.size
+  . Map.filter (== length list)
+  . countCharOccurrences
+  $ list
 
 getNumberOfYesAnswers' :: String -> Int
 getNumberOfYesAnswers' = sum . map (getNoOfQsEver1AnsweredYes . lines) . splitOn "\n\n"
