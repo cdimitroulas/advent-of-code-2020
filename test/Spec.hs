@@ -2,6 +2,7 @@ import Test.Hspec
 
 import qualified Day4 as D4
 import qualified Day5 as D5
+import qualified Day6 as D6
 
 day3TestInput :: [[Char]]
 day3TestInput = [
@@ -22,3 +23,14 @@ main = hspec $ do
       D5.getSeatId "BFFFBBFRRR" `shouldBe` 567
       D5.getSeatId "FFFBBBFRRR" `shouldBe` 119
       D5.getSeatId "BBFFBBFRLL" `shouldBe` 820
+
+  describe "Day6 exercises" $ do
+    describe "Part1" $ do
+      it "returns the correct sum based on the example input" $ do
+        input <- readFile "test/day6-example.txt"
+        D6.getNumberOfYesAnswers input `shouldBe` 11
+
+    describe "Part2" $ do
+      it "returns the correct sum based on the example input" $ do
+        input <- readFile "test/day6-example.txt"
+        D6.getNumberOfYesAnswers' input `shouldBe` 6
