@@ -1,13 +1,10 @@
 module Day2 (findAnswer, findAnswer') where
 
-import qualified Data.ByteString.Lazy as B
-import qualified Data.ByteString.Lazy.Char8 as BC
+import Data.List.Split
+import Text.Read
 
 inputFilePath :: FilePath
 inputFilePath = "lib/day2.txt"
-
-readExerciseData :: IO B.ByteString
-readExerciseData = B.readFile inputFilePath
 
 -- Part 1
 type Min = Int
@@ -17,39 +14,39 @@ type Password = [Char]
 
 type PasswordEntry = (Requirement, Password)
 
-parseRequirement :: B.ByteString -> Maybe Requirement
+parseRequirement :: String -> Maybe Requirement
 parseRequirement str = do
-  (min, _) <- BC.readInt minStr
-  (max, _) <- BC.readInt maxStr
-  let pwChar = head $ BC.unpack char
-  return (min, max, pwChar)
+  lowerBound <- readMaybe minStr :: Maybe Int
+  upperBound <- readMaybe maxStr :: Maybe Int
+  let pwChar = head char
+  return (lowerBound, upperBound, pwChar)
   
   where
-    req:(char:_) = BC.split ' ' str
-    minStr:(maxStr:_) = BC.split '-' req
+    req:(char:_) = splitOn " " str
+    minStr:(maxStr:_) = splitOn "-" req
 
-parseLine :: B.ByteString -> Maybe PasswordEntry
+parseLine :: String -> Maybe PasswordEntry
 parseLine x = do
   req <- parseRequirement reqStr
   -- we drop the first char as it's a space
-  let (_:pw) = BC.unpack pwStr
+  let (_:pw) = pwStr
   return (req, pw)
 
   where
-    reqStr:(pwStr:_) = BC.split ':' x
+    reqStr:(pwStr:_) = splitOn ":" x
 
 isValidPasswordEntry :: PasswordEntry -> Bool
-isValidPasswordEntry ((min, max, pwChar), pw) = charCount >= min && charCount <= max
+isValidPasswordEntry ((lower, upper, pwChar), pw) = charCount >= lower && charCount <= upper
   where
     charCount = length $ filter (== pwChar) pw
 
-getNoOfValidPwEntries :: (PasswordEntry -> Bool) -> B.ByteString -> Maybe Int
+getNoOfValidPwEntries :: (PasswordEntry -> Bool) -> String -> Maybe Int
 getNoOfValidPwEntries isValid fileContents = do
-  pwEntries <- traverse parseLine $ BC.lines fileContents
+  pwEntries <- traverse parseLine $ lines fileContents
   return $ length $ filter isValid pwEntries
 
 findAnswer :: IO (Maybe Int)
-findAnswer = getNoOfValidPwEntries isValidPasswordEntry <$> readExerciseData
+findAnswer = getNoOfValidPwEntries isValidPasswordEntry <$> readFile inputFilePath
 
 -- Part 2
 safeIndex :: Int -> [a] -> Maybe a
@@ -68,4 +65,4 @@ isValidPasswordEntry' ((pos1, pos2, pwChar), pw) = (charInPos1 && not charInPos2
                    Nothing -> False
 
 findAnswer' :: IO (Maybe Int)
-findAnswer' = getNoOfValidPwEntries isValidPasswordEntry' <$> readExerciseData
+findAnswer' = getNoOfValidPwEntries isValidPasswordEntry' <$> readFile inputFilePath

@@ -1,7 +1,6 @@
 module Day5 (getSeatId, part1, part2) where
 
 import Data.List (sort)
-import Debug.Trace
 
 -- Part 1
 
