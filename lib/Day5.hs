@@ -8,7 +8,7 @@ data SearchOperator = UpperHalf | LowerHalf deriving (Eq, Show)
 
 binarySearch :: [SearchOperator] -> [Int] -> Int
 binarySearch _ [x] = x
-binarySearch (searchOp:sos) list
+binarySearch (searchOp : sos) list
   | searchOp == LowerHalf = binarySearch sos $ take (length list `div` 2) list
   | searchOp == UpperHalf = binarySearch sos $ drop (length list `div` 2) list
 binarySearch _ _ = error "Invalid arguments"
@@ -25,8 +25,8 @@ getSeatId :: String -> Int
 getSeatId seatCode = rowNo * 8 + colNo
   where
     (rowCode, columnCode) = splitAt 7 seatCode
-    rowNo = binarySearch (mkRowSearchOperators rowCode) [0..127]
-    colNo = binarySearch (mkColSearchOperators columnCode) [0..7]
+    rowNo = binarySearch (mkRowSearchOperators rowCode) [0 .. 127]
+    colNo = binarySearch (mkColSearchOperators columnCode) [0 .. 7]
 
 part1 :: IO ()
 part1 = readFile "lib/day5.txt" >>= print . maximum . map getSeatId . lines
@@ -37,13 +37,12 @@ getMissingSeatId :: [Int] -> Int
 getMissingSeatId [] = error "Empty list passed to getMissingSeatId"
 getMissingSeatId [_] = error "did not find result"
 getMissingSeatId [_, _] = error "did not find result"
-getMissingSeatId list = 
+getMissingSeatId list =
   if x1 + 1 == x2 && x2 + 1 == x3
-     then getMissingSeatId (x2:x3:xs)
-     else x3 - 1
+    then getMissingSeatId (x2 : x3 : xs)
+    else x3 - 1
   where
-    (x1:x2:x3:xs) = sort list
-
+    (x1 : x2 : x3 : xs) = sort list
 
 part2 :: IO ()
 part2 = readFile "lib/day5.txt" >>= print . getMissingSeatId . map getSeatId . lines
