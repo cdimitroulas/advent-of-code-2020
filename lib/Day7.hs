@@ -37,18 +37,12 @@ strToBagRule input = case head containedBagColors of
     -- since each group of 4 is always of the form "4 vivid green bags,"
     containedBagColors = (map (unwords . init . tail) . chunksOf 4 . drop 4 . words) input
 
+-- Creates a Map of all the bag rules keyed by their color
 strToBagRules :: String -> Map Color BagRule
-strToBagRules input =
-  Map.fromList
-    ( map
-        ( ( \x -> case x of
-              EmptyBag c -> (c, x)
-              BagContaining c _ -> (c, x)
-          )
-            . strToBagRule
-        )
-        $ lines input
-    )
+strToBagRules input = Map.fromList $ map (toKeyBagRuleTuple . strToBagRule) $ lines input
+  where
+    toKeyBagRuleTuple :: BagRule -> (Color, BagRule)
+    toKeyBagRuleTuple rule = (getColor rule, rule)
 
 canContainGoldBag :: Map Color BagRule -> BagRule -> Bool
 canContainGoldBag _ (EmptyBag _) = False
@@ -63,6 +57,7 @@ getNumberOfBagThatCanContainGold :: String -> Int
 getNumberOfBagThatCanContainGold input = (Map.size . Map.filter canContainGoldBag') bagRuleMap
   where
     bagRuleMap = strToBagRules input
+    -- partially apply canContainGoldBag with the map of all the bag rules
     canContainGoldBag' = canContainGoldBag bagRuleMap
 
 part1 :: IO ()
