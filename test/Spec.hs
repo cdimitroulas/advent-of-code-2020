@@ -2,6 +2,7 @@ import qualified Day4 as D4
 import qualified Day5 as D5
 import qualified Day6 as D6
 import qualified Day7 as D7
+import qualified Day8 as D8
 import Test.Hspec
 
 day3TestInput :: [[Char]]
@@ -40,3 +41,9 @@ main = hspec $ do
       it "returns the correct number of bags based on the example input" $ do
         input <- readFile "test/day7-example.txt"
         D7.getNumberOfBagThatCanContainGold input `shouldBe` 4
+
+  describe "Day8 exercises" $ do
+    describe "Part1" $ do
+      it "returns the correct accumulator value based on the example input" $ do
+        input <- readFile "test/day8-example.txt"
+        D8.getProgramAccumValue input `shouldBe` Just 5

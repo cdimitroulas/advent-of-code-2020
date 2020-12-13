@@ -22,6 +22,7 @@ library
     , containers
     , split
     , regex-compat == 0.95.2.0
+    , mtl == 2.2.2
   ghc-options:         -Wall
   exposed-modules:
     Day1,
@@ -30,7 +31,8 @@ library
     Day4,
     Day5,
     Day6,
-    Day7
+    Day7,
+    Day8
 
 executable advent-of-code
   hs-source-dirs:      src 
@@ -39,6 +41,7 @@ executable advent-of-code
   ghc-options:         -Wall
   build-depends:       
     base >= 4.7 && < 5,
+    mtl == 2.2.2,
     advent-of-code
 
 test-suite unit-tests
