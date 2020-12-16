@@ -11,11 +11,12 @@ readInt = readMaybe
 findFirstException :: Int -> [Int] -> Int
 findFirstException _ [] = error "Nope"
 findFirstException preamble l =
-  if any (\x -> addT x == last subList) pairs
+  if any (\x -> addT x == elemToCheck) pairs
     then findFirstException preamble (tail l)
-    else last subList
+    else elemToCheck
   where
     subList = take (preamble + 1) l
+    elemToCheck = last subList
     pairs = [(a, b) | a <- subList, b <- subList, a /= b]
 
 part1 :: IO ()
