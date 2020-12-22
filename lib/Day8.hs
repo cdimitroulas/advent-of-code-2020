@@ -1,56 +1,69 @@
 module Day8 where
 
 import Control.Monad.State
+import Data.Sequence (Seq)
+import qualified Data.Sequence as Seq
+import Data.Set (Set)
+import qualified Data.Set as Set
+import Debug.Trace
 import Text.Read
 
-newtype Direction = Direction Char deriving (Eq, Show)
-
-mkDirection :: Char -> Maybe Direction
-mkDirection '+' = Just $ Direction '+'
-mkDirection '-' = Just $ Direction '-'
-mkDirection _ = Nothing
-
-unDirection :: Direction -> Char
-unDirection (Direction char) = char
-
-getDirectionOperator :: Num a => Direction -> (a -> a -> a)
-getDirectionOperator dir = if unDirection dir == '+' then (+) else (-)
+mkSign :: Char -> Maybe Int
+mkSign '+' = Just 1
+mkSign '-' = Just (-1)
+mkSign _ = Nothing
 
 -- Data type for the different possible operations that the program can have
-data Command = Accum Direction Int | Jump Direction Int | Noop deriving (Eq, Show)
+data Command = Accum | Jump | Noop deriving (Eq, Show)
 
-mkCommand :: String -> Maybe Command
-mkCommand str = do
+type Instruction = (Command, Int)
+
+mkInstruction :: String -> Maybe Instruction
+mkInstruction str = do
   let (commandNameStr : numStr : _) = words str
-  dir <- mkDirection $ head numStr
+  sign <- mkSign $ head numStr
   num <- readMaybe (tail numStr) :: Maybe Int
   case commandNameStr of
-    "acc" -> Just $ Accum dir num
-    "jmp" -> Just $ Jump dir num
-    "nop" -> Just Noop
+    "acc" -> Just (Accum, sign * num)
+    "jmp" -> Just (Jump, sign * num)
+    "nop" -> Just (Noop, sign * num)
     _ -> Nothing
+
+isNoop :: Instruction -> Bool
+isNoop (Noop, _) = True
+isNoop _ = False
+
+isJump :: Instruction -> Bool
+isJump (Jump, _) = True
+isJump _ = False
 
 -- Stateful things to track:
 --  - The accumulator value
 --  - The line number to execute next
 --  - Which lines have already been executed
 data ExecutionState = ExecutionState
-  { progCommands :: [Command],
+  { progCommands :: [Instruction],
     progNextLineNo :: Int,
     progAccum :: Int,
     progExecutedLineNos :: [Int]
   }
   deriving (Show)
 
-mkInitialState :: [Command] -> ExecutionState
-mkInitialState cmds = ExecutionState cmds 0 0 []
+mkInitialState :: [Instruction] -> ExecutionState
+mkInitialState cmds =
+  ExecutionState
+    { progCommands = cmds,
+      progNextLineNo = 0,
+      progAccum = 0,
+      progExecutedLineNos = []
+    }
 
-getNextLineNo :: Int -> Command -> Int
-getNextLineNo index (Jump dir amt) = getDirectionOperator dir index amt
+getNextLineNo :: Int -> Instruction -> Int
+getNextLineNo index (Jump, num) = index + num
 getNextLineNo index _ = index + 1
 
-getNextAccum :: Int -> Command -> Int
-getNextAccum accum (Accum dir amt) = getDirectionOperator dir accum amt
+getNextAccum :: Int -> Instruction -> Int
+getNextAccum accum (Accum, num) = accum + num
 getNextAccum accum _ = accum
 
 -- If we reach a line which has already been executed, then we want to return the accumulator
@@ -78,14 +91,52 @@ runNextLine = state $ \s ->
 runProgram :: ExecutionState -> Int
 runProgram = do
   (result, newExecState) <- runState runNextLine
-  case result of
-    Just x -> return x
-    Nothing -> return $ runProgram newExecState
+  return
+    ( case result of
+        Just x -> x
+        Nothing -> runProgram newExecState
+    )
 
 getProgramAccumValue :: String -> Maybe Int
 getProgramAccumValue str = do
-  cmds <- (mapM mkCommand . lines) str
+  cmds <- (mapM mkInstruction . lines) str
   return $ runProgram $ mkInitialState cmds
 
 part1 :: IO ()
 part1 = readFile "lib/day8.txt" >>= (print . getProgramAccumValue)
+
+-- Part 2
+-- ----------------------
+
+-- We take our list of commands, we go through it and every time
+-- we find a nop/jmp we add a new list of commands to an array, with this command switched.
+
+switchJmpNoop :: Instruction -> Instruction
+switchJmpNoop (Jump, num) = (Noop, num)
+switchJmpNoop (Noop, num) = (Jump, num)
+switchJmpNoop x = x
+
+getExecutedProgVal :: Seq Instruction -> Int
+getExecutedProgVal prg = head $ do
+  i <- [0 ..]
+  Right a <- return $ trace (show $ f $ Seq.adjust' switchJmpNoop i prg) f $ Seq.adjust' switchJmpNoop i prg
+  return a
+
+-- Returns a Left if there's an infinite loop, a Right otherwise
+f :: Seq Instruction -> Either Int Int
+f prg = exec 0 0 Set.empty
+  where
+    exec :: Int -> Int -> Set Int -> Either Int Int
+    exec accum index s =
+      if index `Set.member` s
+        then Left accum
+        else case index `Seq.lookup` prg of
+          -- if the index is not in prg then it means we've terminated the program
+          Nothing -> Right accum
+          -- if it is a valid index, then we need to keep executing
+          Just cmd -> exec (getNextAccum index cmd) (getNextLineNo index cmd) (Set.insert index s)
+
+part2 :: IO ()
+part2 = do
+  cmdsM <- mapM mkInstruction . lines <$> readFile "lib/day8-test.txt"
+  print $ getExecutedProgVal . Seq.fromList <$> cmdsM
