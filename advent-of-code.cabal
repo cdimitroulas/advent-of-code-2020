@@ -33,7 +33,8 @@ library
     Day6,
     Day7,
     Day8,
-    Day9
+    Day9,
+    Day10
 
 executable advent-of-code
   hs-source-dirs:      src 
